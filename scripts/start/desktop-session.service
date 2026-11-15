@@ -6,7 +6,7 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
-User=1000
+User=root
 PAMName=login
 EnvironmentFile=-/etc/environment
 ExecStart=/usr/local/bin/start-desktop-session

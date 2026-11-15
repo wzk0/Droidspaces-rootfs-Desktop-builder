@@ -12,6 +12,7 @@
 | 桌面 | GNOME 51（Fedora 45 自带版本），开机自启动 |
 | 合成器 | Anland 补丁版 Mutter + 配套补丁版 Xwayland（来自预编译包仓库） |
 | GPU | Mesa for Android Container 的 `fedora_45` 资产（kgsl / turnip）+ 视频解码驱动 `msm_drm_drv_video.so` |
+| 用户 | 只有 `root`（密码 `1234`）；已删除上游镜像的默认用户，未创建普通用户 |
 | 其他 | Google Chrome（arm64）、Fcitx5 中文输入法、中文本地化与上海时区、开发/压缩工具（可选）、Docker（可选） |
 | 运行时工具 | `dstui`（Droidspaces TUI）、GPU 切换器、视频解码管理、USB 管理器 |
 
@@ -37,7 +38,7 @@ GNOME 需要打过 Anland 补丁的 Mutter，它不是发行版自带的包。�
 | `desktop` | `GNOME` | `GNOME` 或 `none`（纯命令行） |
 | `display_backend` | `anland-wayland` | GNOME 强制 Wayland |
 | `PulseAudio` | `none` | Anland 使用应用内置音频，Wayland 下自动关闭 |
-| `custom_username` | `Gold` | 普通用户，初始密码 `1234` |
+| 用户 | 仅 `root` | 密码 `1234`，sshd 允许 root 登录 |
 | `enable_zh_tz` | `true` | 中文 locale + 上海时区 |
 | `enable_mesa` | `true` | 骁龙 GPU 支持（Wayland 必需） |
 | `enable_8gen2_wayland` | `false` | 骁龙 8 Gen 2 花屏修复 |
@@ -51,7 +52,7 @@ GNOME 需要打过 Anland 补丁的 Mutter，它不是发行版自带的包。�
 
 ## 导入与首次启动
 
-1. 下载 `.tar.xz`，在 Droidspaces 中导入为 RootFS；
+1. 下载 `.tar.xz`，在 Droidspaces 中导入为 RootFS（镜像内只有 `root` 用户，密码 `1234`，`sshd` 已允许 root 登录）；
 2. 创建容器时按向导建议启用 Anland / GPU 模式（也可以用归档里的 `container.config`）；
 3. 首次进入后确认：
 
@@ -75,7 +76,7 @@ scripts/tui/install-anland-gnome.sh  # Anland Mutter/Xwayland 包安装器
 scripts/tui/install-mesa.sh          # Mesa + 视频解码驱动安装器
 scripts/tui/droidspaces-tui.sh       # 容器内 TUI（dstui）
 scripts/configure-*.sh               # 桌面 / Chrome 配置
-.github/workflows/                   # build-rootfs-releases.yml（入口）+ core（实现）+ clear（清理旧运行）
+.github/workflows/                   # build-rootfs-releases.yml（入口）+ build-rootfs-core.yml（实现）
 ```
 
 ## 已知限制

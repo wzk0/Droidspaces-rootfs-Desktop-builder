@@ -7,11 +7,6 @@ name: 编译并发布 Droidspaces RootFS
 on:
   workflow_dispatch:
     inputs:
-      custom_username:
-        description: 自定义用户名
-        required: false
-        type: string
-        default: Gold
       desktop:
         description: 桌面环境
         required: true
@@ -101,7 +96,6 @@ jobs:
     name: 构建
     uses: ./.github/workflows/build-rootfs-core.yml
     with:
-      custom_username: ${{ inputs.custom_username }}
       desktop: ${{ inputs.desktop }}
       desktop_autostart: ${{ inputs.desktop_autostart }}
       display_backend: ${{ inputs.display_backend }}

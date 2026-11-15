@@ -14,7 +14,6 @@ ARG ENABLE_docker_ARG
 ARG ENABLE_srf_ARG
 ARG DISPLAY_BACKEND
 ARG ENABLE_8gen2_wayland_ARG
-ARG USERNAME
 ARG ANLAND_RELEASE_REPOSITORY=Goldzxcbug/droidspaces-package
 ARG ANLAND_PACKAGE_REVISION=unknown
 ######################################################
@@ -116,14 +115,14 @@ RUN if [ "$ENABLE_zh_tz_ARG" = "true" ]; then \
     fi && \
     # 配置 SSH 服务
     mkdir -p /var/run/sshd && \
-    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    # 删除默认可能存在的用户并创建新用户
+    # 本镜像只保留 root：清除上游镜像可能存在的默认用户，并设置 root 密码
     (userdel -r debian 2>/dev/null || true) && \
-    useradd -m -s /bin/bash ${USERNAME} && echo "${USERNAME}:1234" | chpasswd
+    echo "root:1234" | chpasswd
 
 # 为所有 Fedora RootFS 安装 Droidspaces USB Manager
-RUN /usr/local/sbin/install-droidspaces-usb-manager --user "${USERNAME}"
+RUN /usr/local/sbin/install-droidspaces-usb-manager --user root
 
 # 初始化环境变量文件；桌面专属变量由对应 profile 管理。
 RUN : > /etc/environment
@@ -149,8 +148,8 @@ RUN if [ "$PulseAudio" = "socket" ]; then \
 COPY scripts/start/ /tmp/droidspaces-start/
 RUN <<'EOF_RUN'
     if [ "$ENABLE_srf_ARG" = "true" ]; then
-    mkdir -p /home/${USERNAME}/.config/autostart
-    cat <<'EOF' > /home/${USERNAME}/.config/autostart/fcitx5.desktop
+    mkdir -p /root/.config/autostart
+    cat <<'EOF' > /root/.config/autostart/fcitx5.desktop
 [Desktop Entry]
 Name=Fcitx5
 GenericName=Input Method
@@ -179,8 +178,8 @@ TU_DEBUG=noconform
 EOF
     fi
 
-    echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> /home/${USERNAME}/.bashrc
-    /usr/local/sbin/configure-desktop "$DESKTOP" "$DISPLAY_BACKEND" "$DESKTOP_AUTOSTART" "$USERNAME"
+    echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> /root/.bashrc
+    /usr/local/sbin/configure-desktop "$DESKTOP" "$DISPLAY_BACKEND" "$DESKTOP_AUTOSTART"
     rm -rf /tmp/droidspaces-start
 EOF_RUN
 
@@ -221,21 +220,13 @@ grep -q '^aid_net_admin:' /etc/group || echo 'aid_net_admin:x:3005:' >> /etc/gro
 getent group droidspaces-gpu >/dev/null || groupadd -g 786 -r droidspaces-gpu
 
 usermod -a -G aid_inet,aid_net_raw,input,video,tty,droidspaces-gpu root || true
-usermod -a -G aid_inet,aid_net_raw,input,video,tty,wheel,droidspaces-gpu ${USERNAME} || true
 
-# --- PipeWire 实时调度权限：修复 Plasma/KWin 反复重启 ---
+# --- PipeWire 实时调度权限 ---
 getent group pipewire >/dev/null || groupadd -r pipewire
-usermod -a -G pipewire ${USERNAME} || true
 mkdir -p /etc/systemd/system.conf.d /etc/systemd/user.conf.d
 printf '[Manager]\nDefaultLimitRTPRIO=70\nDefaultLimitNICE=-19\nDefaultLimitRTTIME=infinity\n' \
     > /etc/systemd/system.conf.d/50-pipewire-rt.conf
 cp /etc/systemd/system.conf.d/50-pipewire-rt.conf /etc/systemd/user.conf.d/50-pipewire-rt.conf
-
-# 确保未来通过 useradd 创建的新用户也会进入附加组 (Fedora 通过 /etc/default/useradd 处理)
-if [ -f /etc/default/useradd ]; then
-    sed -i '/^GROUPS=/d' /etc/default/useradd
-    echo 'GROUPS="aid_inet,aid_net_raw,input,video,tty"' >> /etc/default/useradd
-fi
 
 # --- 2. 针对 Systemd 的特定修复 ---
 ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service

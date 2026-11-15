@@ -6,10 +6,6 @@ name: Droidspaces RootFS 核心构建
 on:
   workflow_call:
     inputs:
-      custom_username:
-        required: false
-        type: string
-        default: Gold
       desktop:
         required: true
         type: string
@@ -86,7 +82,6 @@ jobs:
       - name: 解析构建选项
         id: resolve
         env:
-          CUSTOM_USERNAME: ${{ inputs.custom_username }}
           DESKTOP_INPUT: ${{ inputs.desktop }}
           DESKTOP_AUTOSTART_INPUT: ${{ inputs.desktop_autostart }}
           DISPLAY_BACKEND_INPUT: ${{ inputs.display_backend }}
@@ -101,9 +96,6 @@ jobs:
 
           if [[ ! "$WAYLAND_PACKAGE_REPOSITORY" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
             fail "Wayland 软件包仓库必须使用公开的“所有者/仓库名”格式。"
-          fi
-          if [[ ! "$CUSTOM_USERNAME" =~ ^[A-Za-z_][A-Za-z0-9_-]{0,31}$ ]]; then
-            fail "自定义用户名必须是 1 至 32 个字符的有效 Linux 用户名。"
           fi
 
           DESKTOP="$(desktop_normalize "$DESKTOP_INPUT")" || fail "无效的桌面环境：$DESKTOP_INPUT"
@@ -174,7 +166,6 @@ jobs:
       - name: 构建根文件系统
         env:
           ANLAND_RELEASE_REPOSITORY: ${{ inputs.wayland_package_repository }}
-          CUSTOM_USERNAME: ${{ inputs.custom_username }}
         run: |
           chmod +x build_rootfs-native.sh
           ./build_rootfs-native.sh \
@@ -192,8 +183,7 @@ jobs:
             -e "${{ inputs.enable_zip }}" \
             -f "${{ inputs.enable_docker }}" \
             -h "${{ inputs.enable_srf }}" \
-            -t "${{ inputs.enable_8gen2_wayland }}" \
-            -u "$CUSTOM_USERNAME"
+            -t "${{ inputs.enable_8gen2_wayland }}"
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v6
@@ -234,7 +224,6 @@ jobs:
           BUILD_TIME: ${{ needs.setup.outputs.build_date }}
           BUILD_ID: ${{ needs.setup.outputs.build_id }}
           BUILD_TEMPLATE: ${{ needs.setup.outputs.template }}
-          CUSTOM_USERNAME: ${{ inputs.custom_username }}
           DESKTOP: ${{ needs.setup.outputs.desktop }}
           DISPLAY_BACKEND: ${{ needs.setup.outputs.display_backend }}
           DESKTOP_AUTOSTART: ${{ needs.setup.outputs.desktop_autostart }}
@@ -258,7 +247,7 @@ jobs:
           构建 ID：$BUILD_ID
 
           构建选项：
-          - **自定义用户名**：$CUSTOM_USERNAME
+          - **用户**：仅 root（密码 1234，允许 root SSH 登录）
           - **桌面环境**：$DESKTOP
           - **显示后端**：$DISPLAY_BACKEND
           - **桌面开机自启动**：$DESKTOP_AUTOSTART
