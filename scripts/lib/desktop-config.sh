@@ -67,7 +67,7 @@ desktop_target_supported() {
             esac
             ;;
         gnome)
-            case "$target" in Debian-13|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;; *) return 1 ;; esac
+            case "$target" in Debian-13|Ubuntu-26|Fedora-43|Fedora-44|Fedora-45|Arch) return 0 ;; *) return 1 ;; esac
             ;;
         anland-next)
             case "$target" in
@@ -103,7 +103,7 @@ desktop_backend_supported() {
             esac
             ;;
         gnome:anland-wayland)
-            case "$target" in Debian-13|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;; *) return 1 ;; esac
+            case "$target" in Debian-13|Ubuntu-26|Fedora-43|Fedora-44|Fedora-45|Arch) return 0 ;; *) return 1 ;; esac
             ;;
         anland-next:anland-wayland)
             case "$target" in

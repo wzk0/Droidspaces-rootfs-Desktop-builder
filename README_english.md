@@ -27,7 +27,7 @@ Subscribe to the rolling desktop feed in Droidspaces: [Chinese RootFS (GitHub)](
 
 ## Targets
 
-`Debian-13`, `Ubuntu-24`, `Ubuntu-25`, `Ubuntu-26`, `Fedora-43`, `Fedora-44`, `Fedora-45`, and `Arch`. GNOME, Niri, Hyprland, Mango, and Denial are available on Debian 13, Ubuntu 26, Fedora 43/44, and Arch Linux ARM. `Fedora-45` currently supports `none` and `KDE` (X11) only, because upstream has not published `fedora45` Anland/Mesa packages. See the [build options guide](docs/en/build-options.md) for desktop and display-backend compatibility.
+`Debian-13`, `Ubuntu-24`, `Ubuntu-25`, `Ubuntu-26`, `Fedora-43`, `Fedora-44`, `Fedora-45`, and `Arch`. GNOME, Niri, Hyprland, Mango, and Denial are available on Debian 13, Ubuntu 26, Fedora 43/44, and Arch Linux ARM. `Fedora-45` supports `none`, `KDE` (X11), and `GNOME`; GNOME requires pointing `wayland_package_repository` at self-built `fedora45` Anland/Mesa assets, which upstream has not published yet. See the [build options guide](docs/en/build-options.md) for desktop and display-backend compatibility.
 
 ## Acknowledgements
 

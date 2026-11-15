@@ -27,7 +27,7 @@
 
 ## 支持范围
 
-构建目标：`Debian-13`、`Ubuntu-24`、`Ubuntu-25`、`Ubuntu-26`、`Fedora-43`、`Fedora-44`、`Fedora-45`、`Arch`。GNOME、Niri、Hyprland、Mango 和 Denial 支持 Debian 13、Ubuntu 26、Fedora 43/44 与 Arch Linux ARM。`Fedora-45` 目前仅支持 `none` 与 `KDE`（X11），因为上游尚未发布 `fedora45` 的 Anland/Mesa 预编译包。桌面及显示后端的完整兼容矩阵见[构建选项](docs/zh/构建选项.md)。
+构建目标：`Debian-13`、`Ubuntu-24`、`Ubuntu-25`、`Ubuntu-26`、`Fedora-43`、`Fedora-44`、`Fedora-45`、`Arch`。GNOME、Niri、Hyprland、Mango 和 Denial 支持 Debian 13、Ubuntu 26、Fedora 43/44 与 Arch Linux ARM。`Fedora-45` 支持 `none`、`KDE`（X11）与 `GNOME`；GNOME 需要把 `wayland_package_repository` 指向自行构建的 `fedora45` Anland/Mesa 资产（上游尚未发布）。桌面及显示后端的完整兼容矩阵见[构建选项](docs/zh/构建选项.md)。
 
 ## 致谢
 

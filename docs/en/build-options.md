@@ -14,12 +14,12 @@ Choose the target, desktop, display backend, and optional features on the GitHub
 | `Ubuntu-26` | Ubuntu 26.04 | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes |
 | `Fedora-43` | Fedora 43 | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes |
 | `Fedora-44` | Fedora 44 | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes |
-| `Fedora-45` | Fedora 45 | `none`, `KDE` (X11) | Not yet |
+| `Fedora-45` | Fedora 45 | `none`, `KDE` (X11), `GNOME` | Requires self-built `fedora45` assets |
 | `Arch` | Arch Linux ARM | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes (KDE uses Anland Wayland only) |
 
 `all` filters targets according to desktop/backend support. `all-wayland` builds Debian 13, Ubuntu 26, Fedora 43/44, and Arch for KDE/KDE Mobile, GNOME, Niri, Hyprland, Mango, and Denial. Arch KDE, GNOME, KDE Mobile, Anland Next, Niri, Hyprland, Mango, and Denial force `anland-wayland`.
 
-> **Fedora 45 status:** upstream [`droidspaces-package`](https://github.com/Goldzxcbug/droidspaces-package) has not published `fedora45` Anland packages (patched Mutter/KWin/Niri) or a `fedora45` Mesa archive yet, so `Fedora-45` can currently only build `none` and `KDE` with `x11`. Disable `enable_mesa` for this target, otherwise the build stops at the Mesa install step with an explicit error. Once upstream publishes `fedora45` assets, allow `Fedora-45` in the `scripts/lib/desktop-config.sh` allowlists and add `fedora:45*` branches to `scripts/tui/install-anland-*.sh` and `scripts/tui/install-mesa.sh`.
+> **Fedora 45 status:** upstream [`droidspaces-package`](https://github.com/Goldzxcbug/droidspaces-package) does not publish `fedora45` Anland packages or Mesa archives yet, so `none` and `KDE` with `x11` build directly, while `GNOME` requires pointing `wayland_package_repository` at your own package repo (GNOME needs `anland-gnome-fedora45-mutter-*`, Mesa needs `*_fedora_45_arm64.tar.gz`). The other Wayland desktops (KDE mobile, Anland Next, Niri, Hyprland, Mango, Denial) are not opened for Fedora 45, and `all-wayland` excludes Fedora 45. `enable_systemd257` has no Fedora 45 build either.
 
 | Desktop | Description |
 | --- | --- |
