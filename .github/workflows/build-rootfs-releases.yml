@@ -1,5 +1,7 @@
 name: 编译并发布 Droidspaces RootFS
 
+# Fedora-45 目标额外提供；该目标的 GNOME 需要自建 fedora45 的 Anland Mutter 与 Mesa 资产，
+# 构建时把 wayland_package_repository 指向自己的包仓库。
 on:
   workflow_dispatch:
     inputs:
