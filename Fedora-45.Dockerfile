@@ -194,6 +194,7 @@ EOF
 EOF_RUN
 
 RUN if [ "$ENABLE_mesa_ARG" = "true" ]; then \
+        ANLAND_MESA_RELEASE_REPOSITORY="$ANLAND_RELEASE_REPOSITORY" \
         /usr/local/sbin/install-mesa --1; \
     else \
         echo "--> [跳过] 未开启 Mesa 驱动安装"; \
