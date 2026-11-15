@@ -48,7 +48,7 @@ display_backend_label() {
 
 target_is_known() {
     case "${1:-}" in
-        Debian-13|Ubuntu-24|Ubuntu-25|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;;
+        Debian-13|Ubuntu-24|Ubuntu-25|Ubuntu-26|Fedora-43|Fedora-44|Fedora-45|Arch) return 0 ;;
         *) return 1 ;;
     esac
 }
@@ -92,7 +92,7 @@ desktop_backend_supported() {
         none:x11) return 0 ;;
         kde:x11)
             case "$target" in
-                Debian-13|Ubuntu-24|Ubuntu-25|Ubuntu-26|Fedora-43|Fedora-44) return 0 ;;
+                Debian-13|Ubuntu-24|Ubuntu-25|Ubuntu-26|Fedora-43|Fedora-44|Fedora-45) return 0 ;;
                 *) return 1 ;;
             esac
             ;;
@@ -136,6 +136,7 @@ anland_archive_target() {
         Ubuntu-26) printf '%s\n' ubuntu2604 ;;
         Fedora-43) printf '%s\n' Fedora43 ;;
         Fedora-44) printf '%s\n' Fedora44 ;;
+        Fedora-45) printf '%s\n' Fedora45 ;;
         Arch) printf '%s\n' Arch ;;
         *) return 1 ;;
     esac

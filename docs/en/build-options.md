@@ -14,9 +14,12 @@ Choose the target, desktop, display backend, and optional features on the GitHub
 | `Ubuntu-26` | Ubuntu 26.04 | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes |
 | `Fedora-43` | Fedora 43 | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes |
 | `Fedora-44` | Fedora 44 | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes |
+| `Fedora-45` | Fedora 45 | `none`, `KDE` (X11) | Not yet |
 | `Arch` | Arch Linux ARM | `none`, `KDE`, `KDE mobile`, `GNOME`, `Anland Next`, `Niri`, `Hyprland`, `Mango`, `Denial` | Yes (KDE uses Anland Wayland only) |
 
 `all` filters targets according to desktop/backend support. `all-wayland` builds Debian 13, Ubuntu 26, Fedora 43/44, and Arch for KDE/KDE Mobile, GNOME, Niri, Hyprland, Mango, and Denial. Arch KDE, GNOME, KDE Mobile, Anland Next, Niri, Hyprland, Mango, and Denial force `anland-wayland`.
+
+> **Fedora 45 status:** upstream [`droidspaces-package`](https://github.com/Goldzxcbug/droidspaces-package) has not published `fedora45` Anland packages (patched Mutter/KWin/Niri) or a `fedora45` Mesa archive yet, so `Fedora-45` can currently only build `none` and `KDE` with `x11`. Disable `enable_mesa` for this target, otherwise the build stops at the Mesa install step with an explicit error. Once upstream publishes `fedora45` assets, allow `Fedora-45` in the `scripts/lib/desktop-config.sh` allowlists and add `fedora:45*` branches to `scripts/tui/install-anland-*.sh` and `scripts/tui/install-mesa.sh`.
 
 | Desktop | Description |
 | --- | --- |

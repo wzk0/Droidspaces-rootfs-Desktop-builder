@@ -506,6 +506,10 @@ detect_target() {
                     ARCHIVE_KIND="tar.gz"
                     ASSET_PATTERN='^mesa-for-android-container_[^/]+_fedora_44_arm64\.tar\.gz$'
                     ;;
+                45*)
+                    die "尚未发布 Fedora 45 的 Mesa 预编译包，请关闭 enable_mesa（或改用 Fedora 43/44）。" \
+                        "No prebuilt Mesa package is published for Fedora 45 yet; disable enable_mesa (or use Fedora 43/44)."
+                    ;;
                 *)
                     die "不支持当前系统 ${system_name}。仅支持 Fedora 43/44。" \
                         "Unsupported system: ${system_name}. Only Fedora 43/44 are supported."
