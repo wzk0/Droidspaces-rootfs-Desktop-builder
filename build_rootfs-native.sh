@@ -8,12 +8,10 @@ source "$REPO_DIR/scripts/lib/rootfs-config.sh"
 ARCH=$(uname -m)          # 获取当前系统架构
 ENABLE_binfmt="false"
 DESKTOP_AUTOSTART="false"
-ENABLE_nosnap="false"
 ENABLE_8gen2_wayland="false"
-ENABLE_systemd257="false"
 DISPLAY_BACKEND_INPUT="X11"
 # 解析输入参数 (-i 指定 Dockerfile，-v 指定版本号)
-while getopts "i:v:K:L:B:P:a:b:c:d:e:f:g:h:n:S:t:u:A:" opt; do
+while getopts "i:v:K:L:B:P:a:b:c:d:e:f:g:h:t:u:A:" opt; do
   case $opt in
     i) DOCKERFILE="$OPTARG" ;; # -i 参数赋值给 DOCKERFILE 变量
     v) VERSION="$OPTARG" ;;    # -v 参数赋值给 VERSION 变量
@@ -29,8 +27,6 @@ while getopts "i:v:K:L:B:P:a:b:c:d:e:f:g:h:n:S:t:u:A:" opt; do
     e) ENABLE_zip="$OPTARG" ;;
     f) ENABLE_docker="$OPTARG" ;;
     h) ENABLE_srf="$OPTARG" ;; # 输入法 fcitx5
-    n) ENABLE_nosnap="$OPTARG" ;; # Ubuntu nosnap
-    S) ENABLE_systemd257="$OPTARG" ;; # systemd 257 旧内核兼容
     t) ENABLE_8gen2_wayland="$OPTARG" ;; # 修复骁龙8 Gen 2 Wayland 花屏
     u) USERNAME="$OPTARG" ;; # 自定义用户名
     A) LEGACY_ANLAND_INPUT="$OPTARG" ;; # 兼容旧参数
@@ -58,30 +54,7 @@ if ! DISPLAY_BACKEND="$(display_backend_normalize "$DISPLAY_BACKEND_INPUT")"; th
   exit 1
 fi
 case "$DESKTOP_AUTOSTART" in true|false) ;; *) echo "错误：-L 只支持 true 或 false。" >&2; exit 1 ;; esac
-case "$ENABLE_systemd257" in
-  true)
-    case "$DESKTOP" in
-      kde)
-        echo "提示：systemd 257 已启用，普通 KDE 位于验证支持白名单中。"
-        ;;
-      none)
-        DISPLAY_BACKEND="x11"
-        DESKTOP_AUTOSTART="false"
-        ;;
-      *)
-        echo "提示：systemd 257 尚不支持 $DESKTOP，强制使用 none 桌面并关闭桌面自启动。"
-        DESKTOP="none"
-        DISPLAY_BACKEND="x11"
-        DESKTOP_AUTOSTART="false"
-        ;;
-    esac
-    ;;
-  false) ;;
-  *) echo "错误：-S 只支持 true 或 false。" >&2; exit 1 ;;
-esac
-
-if [[ "$DESKTOP" == kde-mobile || "$DESKTOP" == gnome || "$DESKTOP" == anland-next || \
-      "$DESKTOP" == niri || "$DESKTOP" == hyprland || "$DESKTOP" == mango || "$DESKTOP" == denial ]]; then
+if [[ "$DESKTOP" == gnome ]]; then
   DISPLAY_BACKEND="anland-wayland"
 fi
 if [[ "$DISPLAY_BACKEND" == anland-wayland ]]; then
@@ -123,8 +96,6 @@ echo " 使用模板文件 : $DOCKERFILE"
 echo " 当前构建版本 : $VERSION"
 echo " 跨架构 : $ENABLE_binfmt"
 echo " 容器识别部分硬件和网络：$ENABLE_yj"
-echo " Ubuntu nosnap：$ENABLE_nosnap"
-echo " systemd 257 旧内核兼容：$ENABLE_systemd257"
 echo " 修复骁龙8 Gen 2 Wayland 花屏：$ENABLE_8gen2_wayland"
 echo " 桌面：$DESKTOP"
 echo " 显示后端：$DISPLAY_BACKEND"
@@ -191,8 +162,6 @@ docker buildx build \
   --build-arg ENABLE_zip_ARG="$ENABLE_zip" \
   --build-arg ENABLE_docker_ARG="$ENABLE_docker" \
   --build-arg ENABLE_srf_ARG="$ENABLE_srf" \
-  --build-arg ENABLE_nosnap_ARG="$ENABLE_nosnap" \
-  --build-arg ENABLE_systemd257_ARG="$ENABLE_systemd257" \
   --build-arg ENABLE_8gen2_wayland_ARG="$ENABLE_8gen2_wayland" \
   --build-arg ANLAND_RELEASE_REPOSITORY="$ANLAND_RELEASE_REPOSITORY" \
   --build-arg ANLAND_PACKAGE_REVISION="$ANLAND_PACKAGE_REVISION" \

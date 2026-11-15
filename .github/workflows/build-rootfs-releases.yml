@@ -1,80 +1,54 @@
 name: 编译并发布 Droidspaces RootFS
 
-# Fedora-45 目标额外提供；该目标的 GNOME 需要自建 fedora45 的 Anland Mutter 与 Mesa 资产，
-# 构建时把 wayland_package_repository 指向自己的包仓库。
+# 唯一流水线：Fedora 45 + GNOME（Anland Wayland）。
+# GNOME 需要预编译的 Anland Mutter；上游仓库尚未发布 fedora45 资产时，
+# 把 wayland_package_repository 指向自建的包仓库。
+
 on:
   workflow_dispatch:
     inputs:
-      build_target:
-        description: 选择要构建的发行版
-        required: true
-        type: choice
-        default: Debian-13
-        options:
-          - Debian-13
-          - Ubuntu-24
-          - Ubuntu-25
-          - Ubuntu-26
-          - Fedora-43
-          - Fedora-44
-          - Fedora-45
-          - Arch
-          - all
-          - all-wayland
       custom_username:
         description: 自定义用户名
         required: false
         type: string
         default: Gold
       desktop:
-        description: 主桌面（负责开机自启动的桌面）
+        description: 桌面环境
         required: true
         type: choice
-        default: KDE
+        default: GNOME
         options:
-          - none
-          - KDE
-          - KDE mobile
           - GNOME
-          - Anland Next
-          - Niri
-          - Hyprland
-          - Mango
-          - Denial
-      extra_desktops:
-        description: "额外桌面，用逗号分隔（例如 Niri,Hyprland）"
-        required: false
-        type: string
-        default: ""
+          - none
       desktop_autostart:
         description: 桌面开机自启动（桌面为 none 时自动关闭）
         required: true
         type: boolean
         default: true
       display_backend:
-        description: 显示后端（KDE mobile/GNOME/Anland Next/Niri/Hyprland/Mango/Denial 固定使用 Anland Wayland）
+        description: 显示后端（GNOME 固定使用 Anland Wayland）
         required: true
         type: choice
         default: anland-wayland
         options:
-          - x11
           - anland-wayland
+          - x11
       PulseAudio:
-        description: PulseAudio 音频转发
+        description: PulseAudio 音频转发（Anland Wayland 下自动关闭）
         required: true
         type: choice
-        default: socket
+        default: none
         options:
+          - none
           - socket
           - tcp
-          - none
       enable_zh_tz:
         description: 使用中文并设置上海时区
         required: true
         type: boolean
         default: true
       enable_mesa:
-        description: 开启高通骁龙 GPU 支持
+        description: 开启高通骁龙 GPU 支持（Anland Wayland 必需）
         required: true
         type: boolean
         default: true
@@ -83,18 +57,8 @@ on:
         required: true
         type: boolean
         default: false
-      nosnap:
-        description: 移除 Ubuntu Snap
-        required: true
-        type: boolean
-        default: true
-      enable_systemd257:
-        description: 使用 systemd 257 包族（仅支持 none 和普通 KDE）
-        required: true
-        type: boolean
-        default: false
       enable_srf:
-        description: 开启 fcitx5 输入法
+        description: 安装 Fcitx5 输入法
         required: true
         type: boolean
         default: true
@@ -137,19 +101,14 @@ jobs:
     name: 构建
     uses: ./.github/workflows/build-rootfs-core.yml
     with:
-      ui_language: zh
-      build_target: ${{ inputs.build_target }}
       custom_username: ${{ inputs.custom_username }}
       desktop: ${{ inputs.desktop }}
-      extra_desktops: ${{ inputs.extra_desktops }}
       desktop_autostart: ${{ inputs.desktop_autostart }}
       display_backend: ${{ inputs.display_backend }}
       PulseAudio: ${{ inputs.PulseAudio }}
       enable_zh_tz: ${{ inputs.enable_zh_tz }}
       enable_mesa: ${{ inputs.enable_mesa }}
       enable_8gen2_wayland: ${{ inputs.enable_8gen2_wayland }}
-      nosnap: ${{ inputs.nosnap }}
-      enable_systemd257: ${{ inputs.enable_systemd257 }}
       enable_srf: ${{ inputs.enable_srf }}
       enable_binfmt: ${{ inputs.enable_binfmt }}
       enable_yj: ${{ inputs.enable_yj }}

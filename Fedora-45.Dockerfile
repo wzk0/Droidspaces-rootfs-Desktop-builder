@@ -14,7 +14,6 @@ ARG ENABLE_docker_ARG
 ARG ENABLE_srf_ARG
 ARG DISPLAY_BACKEND
 ARG ENABLE_8gen2_wayland_ARG
-ARG ENABLE_systemd257_ARG
 ARG USERNAME
 ARG ANLAND_RELEASE_REPOSITORY=Goldzxcbug/droidspaces-package
 ARG ANLAND_PACKAGE_REVISION=unknown
@@ -24,15 +23,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 通用 Droidspaces USB Manager 安装器
 COPY scripts/install-usb-manager.sh /usr/local/sbin/install-droidspaces-usb-manager
-COPY scripts/systemd257.sh /usr/local/sbin/systemd257
-COPY scripts/tui/install-anland-kde.sh /usr/local/sbin/install-anland-kde
 COPY scripts/tui/install-anland-gnome.sh /usr/local/sbin/install-anland-gnome
-COPY scripts/tui/install-anland-next.sh /usr/local/sbin/install-anland-next
-COPY scripts/tui/install-anland-niri.sh /usr/local/sbin/install-anland-niri
-COPY scripts/tui/install-anland-hyprland.sh /usr/local/sbin/install-anland-hyprland
-COPY scripts/tui/install-anland-mango.sh /usr/local/sbin/install-anland-mango
-COPY scripts/tui/install-anland-denial.sh /usr/local/sbin/install-anland-denial
-COPY scripts/install-anland-desktop.sh /usr/local/sbin/install-anland-desktop
 COPY scripts/tui/install-mesa.sh /usr/local/sbin/install-mesa
 COPY scripts/tui/install-hangover-wine.sh /usr/local/sbin/install-hangover-wine
 COPY scripts/tui/install-winefonts.sh /usr/local/sbin/install-winefonts
@@ -57,7 +48,7 @@ RUN echo '%_install_langs all' > /etc/rpm/macros.image-language-conf && \
     echo "fastestmirror=True" >> /etc/dnf/dnf.conf && \
     echo "defaultyes=True" >> /etc/dnf/dnf.conf
 
-RUN chmod +x /usr/local/sbin/install-anland-* /usr/local/sbin/install-mesa /usr/local/sbin/install-hangover-wine /usr/local/sbin/install-winefonts /usr/local/sbin/install-desktop /usr/local/sbin/configure-desktop /usr/local/sbin/configure-chrome /usr/local/bin/droidspaces-tui /usr/local/bin/droidspaces-gpu /usr/local/bin/droidspaces-video.sh /usr/local/bin/start-desktop-session /usr/local/lib/droidspaces/desktops/*.sh && \
+RUN chmod +x /usr/local/sbin/install-anland-gnome /usr/local/sbin/install-mesa /usr/local/sbin/install-hangover-wine /usr/local/sbin/install-winefonts /usr/local/sbin/install-desktop /usr/local/sbin/configure-desktop /usr/local/sbin/configure-chrome /usr/local/bin/droidspaces-tui /usr/local/bin/droidspaces-gpu /usr/local/bin/droidspaces-video.sh /usr/local/bin/start-desktop-session /usr/local/lib/droidspaces/desktops/*.sh && \
     ln -s droidspaces-tui /usr/local/bin/dstui && \
     ln -s droidspaces-tui /usr/local/bin/ds-tui && \
     dnf install -y --setopt=install_weak_deps=False \
@@ -101,8 +92,8 @@ RUN chmod +x /usr/local/sbin/install-anland-* /usr/local/sbin/install-mesa /usr/
 ############################################## Anland Wayland 支持 ################################################
 RUN if [ "$DISPLAY_BACKEND" = "anland-wayland" ]; then \
         echo "--> [开启] 正在安装 $DESKTOP 的 Anland 包 (${ANLAND_PACKAGE_REVISION})..." && \
-        ANLAND_RELEASE_REPOSITORY="$ANLAND_RELEASE_REPOSITORY" \
-        /usr/local/sbin/install-anland-desktop "$DESKTOP" --1 && \
+        ANLAND_GNOME_RELEASE_REPOSITORY="$ANLAND_RELEASE_REPOSITORY" \
+        /usr/local/sbin/install-anland-gnome --1 && \
         echo "--> [开启] $DESKTOP 的 Anland 支持已安装"; \
     fi
 
@@ -382,23 +373,13 @@ RUN if [ "$ENABLE_binfmt_ARG" = "true" ]; then \
         rm -f /usr/local/bin/qemu-binfmt-register.sh /etc/systemd/system/qemu-binfmt-register.service; \
     fi
 
-# 可选：为 systemd 258+ 发行版构建 systemd 257 旧内核兼容运行时。
-RUN if [ "$ENABLE_systemd257_ARG" = "true" ]; then \
-        bash /usr/local/sbin/systemd257; \
-    else \
-        echo "--> [跳过] 未启用 systemd 257 旧内核兼容"; \
-    fi
-
 # 最终清理 DNF 缓存以缩减镜像体积
 # 打包前删除仅用于构建的一次性脚本；TUI 和运行时脚本保留。
 RUN rm -f \
         /usr/local/sbin/configure-chrome \
         /usr/local/sbin/configure-desktop \
         /usr/local/sbin/install-desktop \
-        /usr/local/sbin/install-anland-desktop \
-        /usr/local/sbin/install-droidspaces-usb-manager \
-        /usr/local/sbin/systemd257 \
-        /usr/local/sbin/nosnap && \
+        /usr/local/sbin/install-droidspaces-usb-manager && \
     rm -rf /usr/local/lib/droidspaces/desktops && \
     dnf clean all && \
     rm -rf /var/cache/dnf/* /tmp/* /var/tmp/*
